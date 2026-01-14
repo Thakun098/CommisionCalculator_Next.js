@@ -127,8 +127,9 @@ body {
 .btn-calculate {
   background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
   color: white;
+  text-align: center;
   width: 100%;
-  max-width: 250px;
+  max-width: 225px;
   min-width: 120px;
   box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
 }
@@ -142,7 +143,7 @@ body {
   background: linear-gradient(135deg, #5d7b93 0%, #3d5a73 100%);
   color: white;
   width: 100%;
-  max-width: 250px;
+  max-width: 225px;
   min-width: 120px;
   box-shadow: 0 4px 15px rgba(61, 90, 115, 0.3);
 }

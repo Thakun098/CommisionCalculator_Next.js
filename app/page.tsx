@@ -90,15 +90,52 @@ export default function Home() {
 
   const handleCalculate = () => {
     // Check for empty fields first
+    const englishOnlyRegex = /^[a-zA-Z\s]+$/;
+    
+    let nameError = '';
+    if (name.trim() === '') {
+      nameError = 'Please enter Employee Name';
+    } else if (!englishOnlyRegex.test(name)) {
+      nameError = 'Name is not valid, please enter in english.';
+    }
+    // Helper function to validate integer
+    const isInteger = (value: string): boolean => {
+      return /^-?\d+$/.test(value.trim());
+    };
+
+    // Validate locks
+    let locksError = '';
+    if (locks.trim() === '') {
+      locksError = 'Please enter Locks';
+    } else if (!isInteger(locks)) {
+      locksError = 'Please enter with integer or whole number';
+    }
+
+    // Validate stocks
+    let stocksError = '';
+    if (stocks.trim() === '') {
+      stocksError = 'Please enter Stocks';
+    } else if (!isInteger(stocks)) {
+      stocksError = 'Please enter with integer or whole number';
+    }
+
+    // Validate barrels
+    let barrelsError = '';
+    if (barrels.trim() === '') {
+      barrelsError = 'Please enter Barrels';
+    } else if (!isInteger(barrels)) {
+      barrelsError = 'Please enter with integer or whole number';
+    }
+
     const newFieldErrors = {
-      name: name.trim() === '' ? 'Please enter Employee Name' : '',
-      locks: locks.trim() === '' ? 'Please enter Locks' : '',
-      stocks: stocks.trim() === '' ? 'Please enter Stocks' : '',
-      barrels: barrels.trim() === '' ? 'Please enter Barrels' : ''
+      name: nameError,
+      locks: locksError,
+      stocks: stocksError,
+      barrels: barrelsError
     };
     setFieldErrors(newFieldErrors);
 
-    // If any field is empty, don't proceed
+    // If any field has error, don't proceed
     if (Object.values(newFieldErrors).some(error => error !== '')) {
       return;
     }
