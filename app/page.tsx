@@ -1,18 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-interface Entry {
-  id: number;
-  name: string;
-  locks: number;
-  stocks: number;
-  barrels: number;
-  sales: number;
-  commission: number;
-  isValid: boolean;
-  errors: string[];
-}
+import { Entry, FieldErrors } from './lib/types';
+import { calculateSales, calculateCommission } from './lib/calculation';
+import { validateName, validateNumericField, validateInputRanges } from './lib/validation';
 
 export default function Home() {
   const [name, setName] = useState('');
@@ -35,12 +26,12 @@ export default function Home() {
   });
 
   // Field-level validation errors
-  const [fieldErrors, setFieldErrors] = useState<{
-    name: string;
-    locks: string;
-    stocks: string;
-    barrels: string;
-  }>({ name: '', locks: '', stocks: '', barrels: '' });
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+    name: '',
+    locks: '',
+    stocks: '',
+    barrels: ''
+  });
 
   // Save entries to localStorage when they change
   useEffect(() => {
@@ -48,86 +39,14 @@ export default function Home() {
     localStorage.setItem('commissionEntryCount', entryCount.toString());
   }, [entries, entryCount]);
 
-  // Calculate sales: $45 * locks + $30 * stocks + $25 * barrels
-  const calculateSales = (l: number, s: number, b: number): number => {
-    return 45 * l + 30 * s + 25 * b;
-  };
-
-  // Calculate commission with tiered rates:
-  // 10% on first $1,000
-  // 15% on next $800 ($1,001 to $1,800)
-  // 20% on everything above $1,800
-  const calculateCommission = (sales: number): number => {
-    let commission = 0;
-    
-    if (sales <= 1000) {
-      commission = sales * 0.10;
-    } else if (sales <= 1800) {
-      commission = 1000 * 0.10 + (sales - 1000) * 0.15;
-    } else {
-      commission = 1000 * 0.10 + 800 * 0.15 + (sales - 1800) * 0.20;
-    }
-    
-    return commission;
-  };
-
-  // Validate inputs
-  const validateInputs = (l: number, s: number, b: number): string[] => {
-    const errors: string[] = [];
-    
-    if (isNaN(l) || l < 1 || l > 70) {
-      errors.push('Locks must be between 1 and 70');
-    }
-    if (isNaN(s) || s < 1 || s > 80) {
-      errors.push('Stocks must be between 1 and 80');
-    }
-    if (isNaN(b) || b < 1 || b > 90) {
-      errors.push('Barrels must be between 1 and 90');
-    }
-    
-    return errors;
-  };
-
   const handleCalculate = () => {
-    // Check for empty fields first
-    const englishOnlyRegex = /^[a-zA-Z\s]+$/;
-    
-    let nameError = '';
-    if (name.trim() === '') {
-      nameError = 'Please enter Employee Name';
-    } else if (!englishOnlyRegex.test(name)) {
-      nameError = 'Name is not valid, please enter in english.';
-    }
-    // Helper function to validate integer
-    const isInteger = (value: string): boolean => {
-      return /^-?\d+$/.test(value.trim());
-    };
+    // Validate all fields using imported validation functions
+    const nameError = validateName(name);
+    const locksError = validateNumericField(locks, 'Locks');
+    const stocksError = validateNumericField(stocks, 'Stocks');
+    const barrelsError = validateNumericField(barrels, 'Barrels');
 
-    // Validate locks
-    let locksError = '';
-    if (locks.trim() === '') {
-      locksError = 'Please enter Locks';
-    } else if (!isInteger(locks)) {
-      locksError = 'Please enter with integer or whole number';
-    }
-
-    // Validate stocks
-    let stocksError = '';
-    if (stocks.trim() === '') {
-      stocksError = 'Please enter Stocks';
-    } else if (!isInteger(stocks)) {
-      stocksError = 'Please enter with integer or whole number';
-    }
-
-    // Validate barrels
-    let barrelsError = '';
-    if (barrels.trim() === '') {
-      barrelsError = 'Please enter Barrels';
-    } else if (!isInteger(barrels)) {
-      barrelsError = 'Please enter with integer or whole number';
-    }
-
-    const newFieldErrors = {
+    const newFieldErrors: FieldErrors = {
       name: nameError,
       locks: locksError,
       stocks: stocksError,
@@ -147,7 +66,7 @@ export default function Home() {
     if (barrelsError) allErrors.push(barrelsError);
     
     // Also check range validation
-    const rangeErrors = validateInputs(l, s, b);
+    const rangeErrors = validateInputRanges(l, s, b);
     allErrors.push(...rangeErrors);
     
     const isValid = allErrors.length === 0;
