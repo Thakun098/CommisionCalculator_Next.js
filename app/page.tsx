@@ -134,18 +134,23 @@ export default function Home() {
       barrels: barrelsError
     };
     setFieldErrors(newFieldErrors);
-
-    // If any field has error, don't proceed
-    if (Object.values(newFieldErrors).some(error => error !== '')) {
-      return;
-    }
-
-    const l = parseInt(locks);
-    const s = parseInt(stocks);
-    const b = parseInt(barrels);
     
-    const errors = validateInputs(l, s, b);
-    const isValid = errors.length === 0;
+    const l = parseInt(locks) || 0;
+    const s = parseInt(stocks) || 0;
+    const b = parseInt(barrels) || 0;
+    
+    // Collect all errors for the entry
+    const allErrors: string[] = [];
+    if (nameError) allErrors.push(nameError);
+    if (locksError) allErrors.push(locksError);
+    if (stocksError) allErrors.push(stocksError);
+    if (barrelsError) allErrors.push(barrelsError);
+    
+    // Also check range validation
+    const rangeErrors = validateInputs(l, s, b);
+    allErrors.push(...rangeErrors);
+    
+    const isValid = allErrors.length === 0;
     
     let sales = 0;
     let commission = 0;
@@ -158,13 +163,13 @@ export default function Home() {
     const newEntry: Entry = {
       id: entryCount + 1,
       name: name || 'Employee',
-      locks: isNaN(l) ? 0 : l,
-      stocks: isNaN(s) ? 0 : s,
-      barrels: isNaN(b) ? 0 : b,
+      locks: l,
+      stocks: s,
+      barrels: b,
       sales,
       commission,
       isValid,
-      errors
+      errors: allErrors
     };
     
     setEntries([...entries, newEntry]);
@@ -265,7 +270,7 @@ export default function Home() {
       {/* Buttons */}
       <div className="button-group">
         <button className="btn btn-calculate" onClick={handleCalculate}>
-          Calculate
+          Compute
         </button>
         <button className="btn btn-reset" onClick={handleReset}>
           Reset
