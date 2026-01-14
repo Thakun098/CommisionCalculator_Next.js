@@ -1,26 +1,287 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #8c9aab;
+  --foreground: #1e3a5f;
+  --card-bg: #f5f8fa;
+  --input-bg: #ffffff;
+  --input-border: #e0e6ed;
+  --primary: #2d5a7b;
+  --primary-dark: #1e3a5f;
+  --danger: #e74c3c;
+  --success: #27ae60;
+  --table-header: #3d6a8a;
+  --table-row: #e8f0f5;
+  --info-box-bg: #f0f5f9;
+  --info-box-border: #c5d8e8;
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(135deg, #8c9aab 0%, #6b7d8f 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+
+.calculator-container {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 30px 40px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.calculator-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--primary-dark);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: var(--input-bg);
+  color: #666;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(45, 90, 123, 0.1);
+}
+
+.form-input::placeholder {
+  color: #aaa;
+}
+
+.form-input.error,
+.form-input.input-error {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+}
+
+.field-error-message {
+  color: var(--danger);
+  font-size: 0.75rem;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: rgba(231, 76, 60, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid var(--danger);
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 120px;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-calculate {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  width: 100%;
+  max-width: 250px;
+  min-width: 120px;
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+}
+
+.btn-calculate:hover {
+  background: linear-gradient(135deg, #2980b9 0%, #1e6091 100%);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
+}
+
+.btn-reset {
+  background: linear-gradient(135deg, #5d7b93 0%, #3d5a73 100%);
+  color: white;
+  width: 100%;
+  max-width: 250px;
+  min-width: 120px;
+  box-shadow: 0 4px 15px rgba(61, 90, 115, 0.3);
+}
+
+.btn-reset:hover {
+  background: linear-gradient(135deg, #4a6578 0%, #2d4a5a 100%);
+  box-shadow: 0 6px 20px rgba(61, 90, 115, 0.4);
+}
+
+.btn-clear-history {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+  color: white !important;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.btn-clear-history:hover {
+  background: linear-gradient(135deg, #c0392b 0%, #962d22 100%) !important;
+  box-shadow: 0 6px 20px rgba(192, 57, 43, 0.5);
+}
+
+/* Scrollable Table Container */
+.table-scroll-container {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  border-radius: 8px;
+}
+
+/* Results Table */
+.results-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+}
+
+.results-table th {
+  background: var(--table-header);
+  color: white;
+  padding: 10px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.results-table td {
+  background: var(--table-row);
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--primary-dark);
+}
+
+/* Summary Table */
+.summary-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.summary-table th {
+  background: var(--primary);
+  color: white;
+  padding: 10px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.summary-table td {
+  background: var(--table-row);
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--primary-dark);
+}
+
+/* Info Box */
+.info-box {
+  background: var(--info-box-bg);
+  border: 1px solid var(--info-box-border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.entry {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--info-box-border);
+}
+
+.entry:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.entry-header {
+  font-weight: 600;
+  color: var(--primary-dark);
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.entry-name {
+  color: var(--primary);
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.entry-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.entry-sales,
+.entry-commission {
+  font-size: 0.8rem;
+  color: #444;
+  margin-top: 4px;
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.valid-text {
+  color: var(--success);
 }
